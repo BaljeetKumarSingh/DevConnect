@@ -1,8 +1,8 @@
-// require("./xyz"); // add one module in another module
+require("./xyz"); // add one module in another module
 
-// const { word, calculateSum } = require("./sum"); // requiring multiple items
+const { word, calculateSum } = require("./sum"); // requiring multiple items
 
-import { word, calculateSum } from "./sum.js";
+// import { word, calculateSum } from "./sum.js";
 
 // in strict mode (module) it will give ref error
 // but in not strict mode (commonjs) this will be executed error free
