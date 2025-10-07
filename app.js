@@ -1,15 +1,15 @@
 require("./xyz"); // add one module in another module
 
-const { word, calculateSum } = require("./sum"); // requiring multiple items
+// const { calculateSum } = require("./calculate/sum");
+// const { calculateMultiply } = require("./calculate/multiply");
 
-// import { word, calculateSum } from "./sum.js";
+const { calculateSum, calculateMultiply } = require("./calculate"); // by default it takes ./calculate/index
+const data = require("./data.json"); // importing json data
 
-// in strict mode (module) it will give ref error
-// but in not strict mode (commonjs) this will be executed error free
-z = "hello world";
+console.log(data);
 
 var x = 10;
 var y = 20;
 calculateSum(x, y);
-console.log(word);
+calculateMultiply(x, y);
 console.log("app.js code!");
