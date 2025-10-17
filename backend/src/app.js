@@ -2,37 +2,28 @@ const express = require("express");
 
 const app = express();
 
-// playing out with multiple route handler
+// another way to handle multiple route handler or middleware
 
-// route handle signature
-
-// app.use("/path", rH, rH1, rH2, rH3, rH4, rH5);
-// app.use("/path", [rH, rH1, rH2], rH3, rH4, rH5);
-// app.use("/path", rH, [rH1, rH2], rH3, rH4, rH5); // mix-match array
+app.use("/", (req, res, next) => {
+  // middleware
+  // res.send("Handle / route"); // this will not let /user to send its response, for every path after / it will send this response.
+  next();
+});
 
 app.use(
   "/user",
   (req, res, next) => {
-    console.log("Handling the route user 1");
+    // middleware: that's is not sending response
+    console.log("Handling /user route");
     next();
   },
   (req, res, next) => {
-    console.log("Handling the route user 2");
-    next();
+    // route handler: that's actually sending response
+    res.send("1st Response");
   },
   (req, res, next) => {
-    console.log("Handling the route user 3");
-    next();
-  },
-  (req, res, next) => {
-    console.log("Handling the route user 4");
-    next();
-  },
-  (req, res, next) => {
-    console.log("Handling the route user 5");
-    res.send("5th response");
-    // next(); // if we call this without sending response, cannot GET /user
-    // b/c it is waiting for the next route handler which is not preset.
+    // never executes, as we don't put next() in above route handler
+    res.send("2nd Response"); // even there is next() in above rH, this will give error
   }
 );
 
