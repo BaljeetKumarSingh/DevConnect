@@ -1,23 +1,17 @@
 const express = require("express");
 
 const app = express();
+const { adminAuth, userAuth } = require("./middlewares/auth");
 
-// handle Auth Middleware for all GET, POST... requests
-// instead of writting auth logic for every admin APIs, we can write it once in middleware.
+app.use("/admin", adminAuth);
 
-app.use("/admin", (req, res, next) => {
-  console.log("Admin Auth is getting checked!");
-  const token = "xyz";
-  const isAdminAuthorized = token === "xyz";
-  if (!isAdminAuthorized) {
-    res.status(401).send("Unauthorised request");
-  } else {
-    next();
-  }
+// here we don't need to check for user authentication
+app.post("/user/login", (req, res) => {
+  res.send("User is logged in");
 });
 
-// for user path request it will not check for authentication
-app.get("/user", (req, res) => {
+app.get("/user", userAuth, (req, res) => {
+  // if user is authenticated then only this response is send
   res.send("User details");
 });
 
