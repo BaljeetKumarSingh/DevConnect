@@ -1,37 +1,39 @@
 const express = require("express");
-
+const connectDB = require("./config/database");
+const User = require("./models/user");
+const { loadEnvFile } = require("node:process");
+loadEnvFile();
 const app = express();
 
-// error handling
-
-// 1 using try catch
-
-// app.get("/getUserData", (req, res) => {
-//   try {
-//     // logic of DB call & get user data
-//     throw new Error("Error");
-//     res.send("User data send");
-//   } catch (err) {
-//     res.status(500).send("Some error occured, contact support team");
-//   }
-// });
-
-// 2. using middle ware
-
-app.get("/getUserData", (req, res) => {
-  // logic of DB call & get user data
-  throw new Error("Error");
-  res.send("User data send");
-});
-
-// Wild card error handler, always keep it in end so that you can catch the error
-app.use("/", (err, req, res, next) => {
-  if (err) {
-    // log your error
-    res.status(500).send("Something went wrong!");
+app.post("/signup", async (req, res) => {
+  // creating an instance of user model
+  // an instance of a model is called a document
+  const user = new User({
+    firstName: "Baljeet",
+    lastName: "Singh",
+    emailId: "Baljeet@gmail.com",
+    password: "Baljeet@123",
+    age: 24,
+    gender: "Male",
+  });
+  try {
+    // in order to save to the database
+    await user.save(); // since this returns promise so we use await
+    res.send("User Added Successfully!");
+  } catch (err) {
+    res.status(400).send("Error saving the user:" + err.message);
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server is running successfully on port 3000...");
-});
+connectDB()
+  .then(() => {
+    console.log("Database connection establish");
+    // always listen requests only after Database connection is established successfully
+    const port = process.env.PORT;
+    app.listen(port, () => {
+      console.log(`Server is running successfully on port ${port}...`);
+    });
+  })
+  .catch((err) => {
+    console.error("Database can't be connected");
+  });
