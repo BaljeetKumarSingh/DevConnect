@@ -5,17 +5,15 @@ const { loadEnvFile } = require("node:process");
 loadEnvFile();
 const app = express();
 
+// this is an middleware without any route path so every request will pass through it
+// it takes JSON object received from api and parse it into js object and store it into req.body
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
+  console.log(req.body);
   // creating an instance of user model
   // an instance of a model is called a document
-  const user = new User({
-    firstName: "Baljeet",
-    lastName: "Singh",
-    emailId: "Baljeet@gmail.com",
-    password: "Baljeet@123",
-    age: 24,
-    gender: "Male",
-  });
+  const user = new User(req.body);
   try {
     // in order to save to the database
     await user.save(); // since this returns promise so we use await
