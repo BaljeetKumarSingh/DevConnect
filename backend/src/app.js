@@ -9,6 +9,10 @@ const app = express();
 // it takes JSON object received from api and parse it into js object and store it into req.body
 app.use(express.json());
 
+// NEVER TRUST req.body
+// Attacker can put any malicious data in it and pollute your database
+// so make sure to validate and sanitize your data before storing it into database
+
 app.post("/signup", async (req, res) => {
   try {
     // create an instance of user model
