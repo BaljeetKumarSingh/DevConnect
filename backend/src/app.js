@@ -16,74 +16,34 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("A user Added Successfully!");
   } catch (err) {
-    res.status(404).send("User is not added!:", err.message);
+    res.status(400).send(`User is not added!: ${err}`);
   }
 });
 
-// Feed API - Get/Feed - get all the user from the database
+// find and delete
 
-app.get("/feed", async (req, res) => {
-  try {
-    const users = await User.find(req.body);
-    res.send(users);
-  } catch (err) {
-    res.status(400).send("Something went wrong!");
-  }
-});
-
-//delete a user
 app.delete("/delete", async (req, res) => {
   try {
-    const deleteCount = await User.deleteOne(req.body);
-    res.send(deleteCount);
+    const count = await User.deleteMany(req.body);
+    res
+      .status(200)
+      .send(`${count.deletedCount} documents deleted successfully!`);
   } catch (err) {
-    res.status(404).send(req.body, "not found");
+    res.status(400).send(`Unable to proceed request: ${err}`);
   }
 });
 
-// update a user data using updateOne();
+// update
 app.patch("/update", async (req, res) => {
   try {
-    //await User.updateOne({ age: 23 }); // Updates first doc's `age` property
-    const updateUser = await User.updateOne(
-      { firstName: "Nilmani" },
-      { $inc: { age: 10 } } // increase age by 10, we can also utilize these atomic operations.
+    const updatedUser = await User.findByIdAndUpdate(
+      req.body.userId,
+      req.body,
+      { returnDocument: "after", runValidators: true } // runValidators allow us to run validate function of the schema during updates
     );
-    res.send(updateUser);
+    res.status(200).send("User Updated successfully:" + updatedUser);
   } catch (err) {
-    res.status(404).send(req.body, "not found");
-  }
-});
-
-// other supported method
-// using chaining syntax
-
-app.patch("/findAndUpdate", async (req, res) => {
-  try {
-    const updateDetail = await User.findOne(req.body.find).updateOne(
-      req.body.update
-    );
-    if (updateDetail.modifiedCount === 0) {
-      res.send("No match found");
-    } else {
-      res.send("User Updated successfully!");
-    }
-  } catch (err) {
-    res.status(403).send("Something went wrong!:", err.message);
-  }
-});
-
-// findByIdAndUpdate
-
-app.patch("/updateUser", async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.body.userId, req.body, {
-      returnDocument: "after",
-    }); // by default it return returnDocument: "before", when there is no option parameter(3rd parameter)
-    console.log(user);
-    res.send("User updated successfully!");
-  } catch (err) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send("Something went wrong!: " + err.message);
   }
 });
 
