@@ -34,16 +34,30 @@ app.delete("/delete", async (req, res) => {
 });
 
 // update
-app.patch("/update", async (req, res) => {
+app.patch("/update/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  const data = req.body;
   try {
+    const ALLOWED_UPDATES = ["about", "age", "gender", "skills"];
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed!");
+    }
+
+    if (data.skills.length > 10) {
+      throw new Error("Skills can not be more than 10");
+    }
     const updatedUser = await User.findByIdAndUpdate(
-      req.body.userId,
-      req.body,
+      userId,
+      data,
       { returnDocument: "after", runValidators: true } // runValidators allow us to run validate function of the schema during updates
     );
-    res.status(200).send("User Updated successfully:" + updatedUser);
+    res.status(200).send("User Updated successfully:\n" + updatedUser);
   } catch (err) {
-    res.status(400).send("Something went wrong!: " + err.message);
+    res.status(400).send("Something went wrong!:\n" + err.message);
   }
 });
 
