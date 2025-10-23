@@ -5,12 +5,15 @@ const { loadEnvFile } = require("node:process");
 const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cookieParser = require("cookie-parser");
+var jwt = require("jsonwebtoken");
 loadEnvFile();
 const app = express();
 
 // this is an middleware without any route path so every request will pass through it
 // it takes JSON object received from api and parse it into js object and store it into req.body
 app.use(express.json());
+app.use(cookieParser()); // this parse the c
 
 // NEVER TRUST req.body
 // Attacker can put any malicious data in it and pollute your database
@@ -67,10 +70,34 @@ app.post("/login", async (req, res) => {
     if (!isPasswordValid) {
       throw new Error("Invalid Credential");
     } else {
+      // create JWT Token
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+      console.log(token);
+      // Add token to the cookie and send the response back to the user
+      res.cookie("token", token);
       res.send("LoggedIn Successfully!");
     }
   } catch (err) {
     res.status(400).send("ERROR:" + err.message);
+  }
+});
+
+// get the cookie from the server
+app.get("/profile", async (req, res) => {
+  try {
+    const cookie = req.cookies;
+    const { token } = cookie;
+
+    if (!token) {
+      throw new Error("Invalid Tokens");
+    }
+
+    const decodeMsg = jwt.verify(token, "DEV@Connect$420");
+    const { _id } = decodeMsg;
+    const user = await User.findById(_id);
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("Error:" + err.message);
   }
 });
 
