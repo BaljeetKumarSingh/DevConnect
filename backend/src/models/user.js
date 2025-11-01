@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const { PHOTO_URL } = require("../utils/constants");
 
 const userSchema = new mongoose.Schema(
   {
@@ -27,7 +28,11 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
-    age: { type: Number, min: 18 },
+    photoUrl: {
+      type: String,
+      default: PHOTO_URL,
+    },
+    age: { type: Number, min: 10 },
     gender: {
       type: String,
       lowercase: true,
