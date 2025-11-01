@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const { PHOTO_URL } = require("../utils/constants");
+const jwt = require("jsonwebtoken");
+const { loadEnvFile } = require("process");
+const bcrypt = require("bcrypt");
+loadEnvFile();
 
 const userSchema = new mongoose.Schema(
   {
@@ -49,5 +53,25 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true } // adds timestamp to our documents
 );
+
+// created these userSchema methods because these methods are very much specific to user
+
+userSchema.methods.getJWT = async function () {
+  const user = this;
+  const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+  return token;
+};
+
+userSchema.methods.validatePassword = async function (passwordInputByUser) {
+  const user = this;
+  const passwordHash = user.password;
+  const isPasswordValid = await bcrypt.compare(
+    passwordInputByUser,
+    passwordHash
+  );
+  return isPasswordValid;
+};
 
 module.exports = mongoose.model("User", userSchema);
