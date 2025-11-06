@@ -1,4 +1,5 @@
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const validateSignUpData = (req) => {
   const { firstName, lastName, emailId, password } = req.body;
@@ -29,4 +30,24 @@ const validateEditProfileData = (req) => {
   return isValidEditRequest;
 };
 
-module.exports = { validateSignUpData, validateEditProfileData };
+const validateUpdatedPassword = async (req) => {
+  const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+  const isCurrentPasswordValid = await req.user.validatePassword(
+    currentPassword
+  );
+
+  if (!isCurrentPasswordValid) {
+    throw new Error("Please Enter correct current password");
+  } else if (!validator.isStrongPassword(newPassword)) {
+    throw new Error("Please Enter a strong password!");
+  } else if (!(newPassword === confirmNewPassword)) {
+    throw new Error("New password don't match with confirm new password");
+  }
+};
+
+module.exports = {
+  validateSignUpData,
+  validateEditProfileData,
+  validateUpdatedPassword,
+};

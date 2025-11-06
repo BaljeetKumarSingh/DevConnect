@@ -1,7 +1,11 @@
 const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const User = require("../models/user");
-const { validateEditProfileData } = require("../utils/validation");
+const {
+  validateEditProfileData,
+  validateUpdatedPassword,
+} = require("../utils/validation");
+const bcrypt = require("bcrypt");
 
 const profileRouter = express.Router();
 
@@ -14,7 +18,7 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
   }
 });
 
-profileRouter.delete("/deleteUser", userAuth, async (req, res) => {
+profileRouter.delete("/profile/deleteAccount", userAuth, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.user._id);
     // clear cookies
@@ -40,6 +44,20 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
       message: `${loggedInUser.firstName} your profile updated successfully!`,
       data: loggedInUser,
     });
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
+
+profileRouter.patch("/profile/password", userAuth, async (req, res) => {
+  try {
+    await validateUpdatedPassword(req);
+    const loggedInUser = req.user;
+    // encrypt new password and update it in DB
+    const newPasswordHash = await bcrypt.hash(req.body.newPassword, 10);
+    loggedInUser.password = newPasswordHash;
+    await loggedInUser.save();
+    res.send("Password updated Successfully!");
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
   }
