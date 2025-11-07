@@ -57,4 +57,51 @@ requestRouter.post(
   }
 );
 
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user;
+      const { status, requestId } = req.params;
+
+      //api status validation
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).send(`${status} is invalid status`);
+      }
+
+      // validate requestId
+      const connectionRequest = await ConnectionRequest.findById(requestId);
+      if (!connectionRequest) {
+        return res.status(400).json({ message: "Invalid requestId" });
+      } else {
+        // validate status of authorised connectionRequest
+        if (connectionRequest.status !== "interested") {
+          return res.status(404).json({
+            message: `Can't review ${connectionRequest.status} request`,
+          });
+        }
+      }
+
+      // validate that toUserId of connectionRequest should be of logged in user
+      if (loggedInUser._id.equals(connectionRequest.fromUserId)) {
+        throw new Error("Can't review the connection send by yourself");
+      } else if (!loggedInUser._id.equals(connectionRequest.toUserId)) {
+        throw new Error("Can't access others request");
+      }
+
+      // update the status of connection request
+      connectionRequest.status = status;
+      const data = await connectionRequest.save();
+      res.status(200).json({
+        message: `Connection request ${status} successfully!`,
+        data,
+      });
+    } catch (err) {
+      res.status(400).send("Error: " + err.message);
+    }
+  }
+);
+
 module.exports = requestRouter;
