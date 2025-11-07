@@ -15,13 +15,11 @@
 
 ## connection request router
 
-- POST/request/send/interested/:userId
-- POST/request/send/ignored/:userId
-- POST/request/review/accepted/:requestId
-- POST/request/review/regected/:requestId
+- POST/request/send/:status/:userId
+- POST/request/review/:status/:requestId
 
 ## user router
 
+- GET/user/requests/received
 - GET/user/connections
-- GET/user/requests
 - GET/user/feeds
