@@ -1,6 +1,8 @@
 const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequests");
+const visitedUsers = require("../middlewares/visitedUsers");
+const user = require("../models/user");
 const userRouter = express.Router();
 
 const USER_SAFE_DATA = "firstName lastName age gender about skills photoUrl";
@@ -46,6 +48,25 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     });
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
+  }
+});
+
+// get all the feed i.e we want the data of all the user that are not in my connections.
+userRouter.get("/user/feed", userAuth, visitedUsers, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const visitedIds = req.visitedIds;
+
+    // total feed except self
+    const totalFeed = await user.find({ _id: { $ne: loggedInUser._id } });
+
+    // feed other than my visitedUsers
+    const filteredFeed = totalFeed.filter(
+      (data) => !visitedIds.includes(data._id.toString())
+    );
+    res.json(filteredFeed);
+  } catch (err) {
+    res.status(400).send("ERROR:" + err.message);
   }
 });
 
