@@ -50,15 +50,20 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   }
 });
 
-userRouter.get("/user/feed", userAuth, async (req, res) => {
+userRouter.get("/feed", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
-    // total feed except self
+
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    limit = limit > 50 ? 50 : limit;
+
+    const skip = (page - 1) * limit;
+
     const connectionRequests = await ConnectionRequest.find({
       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
     }).select("fromUserId toUserId");
 
-    // set remove redundant data
     const hideUsersFromFeed = new Set();
     connectionRequests.forEach((req) => {
       hideUsersFromFeed.add(req.fromUserId);
@@ -71,8 +76,10 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
           { _id: { $ne: loggedInUser._id } },
         ],
       })
-      .select(USER_SAFE_DATA);
-    res.json(users);
+      .select(USER_SAFE_DATA)
+      .skip(skip)
+      .limit(limit);
+    res.json({ data: users });
   } catch (err) {
     res.status(400).send("ERROR:" + err.message);
   }
