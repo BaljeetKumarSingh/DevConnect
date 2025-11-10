@@ -1,45 +1,22 @@
+import Body from "./Body";
+import NavBar from "./NavBar";
+import { BrowserRouter, Route, Routes } from "react-router";
 function App() {
   return (
     <>
-      <div className="navbar bg-base-100 shadow-sm">
-        <div className="flex-1">
-          <a className="btn btn-ghost text-xl">DevConnect</a>
-        </div>
-        <div className="flex gap-2">
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
-              </div>
-            </div>
-            <ul
-              tabIndex="-1"
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-            >
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <h1 className="bg-amber-500">Hello World</h1>
+      <BrowserRouter basename="/">
+        <Routes>
+          {/* <Route path="/" element={<Body />} /> */}
+          <Route path="/" element={<Body />}>
+            <Route
+              path="/hello"
+              element={<h1 className="bg-amber-500">Hello World</h1>}
+            />
+            <Route path="/login" element={<h1>Login Page</h1>} />
+            <Route path="/about" element={<h1>About Page</h1>} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }
