@@ -2,10 +2,17 @@ const express = require("express");
 const connectDB = require("./config/database");
 const { loadEnvFile } = require("node:process");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 loadEnvFile();
 const app = express();
 
+app.use(
+  cors({
+    origin: "http://localhost:5173", // port address of frontend
+    credentials: true, // it will treat http as https and thus help browser to get token in its cookies
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
