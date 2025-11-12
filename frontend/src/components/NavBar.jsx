@@ -1,8 +1,22 @@
-import { useSelector } from "react-redux";
-import { Link } from "react-router";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router";
+import { BASE_URL } from "../utils/constants";
+import { toast, ToastContainer } from "react-toastify";
+import { removeUser } from "../utils/userSlice";
 
 const NavBar = () => {
   const user = useSelector((store) => store.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
+    dispatch(removeUser());
+    toast("We Will Miss You!");
+    return navigate("/login");
+  };
+
   return (
     <div className="navbar bg-base-300 shadow-blue-300 shadow-md">
       <div className="flex-1">
@@ -41,13 +55,14 @@ const NavBar = () => {
                   <a>Settings</a>
                 </li>
                 <li>
-                  <a>Logout</a>
+                  <a onClick={handleLogout}>Logout</a>
                 </li>
               </ul>
             </div>
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };
