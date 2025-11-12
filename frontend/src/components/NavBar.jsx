@@ -2,7 +2,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
 import { BASE_URL } from "../utils/constants";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { removeUser } from "../utils/userSlice";
 
 const NavBar = () => {
@@ -13,12 +13,12 @@ const NavBar = () => {
   const handleLogout = async () => {
     await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
     dispatch(removeUser());
-    toast("We Will Miss You!");
+    toast("We'll Miss You!");
     return navigate("/login");
   };
 
   return (
-    <div className="navbar bg-base-300 shadow-blue-300 shadow-md">
+    <div className="navbar bg-base-300">
       <div className="flex-1">
         <Link to="/" className="btn btn-ghost text-xl">
           DevConnect
@@ -62,7 +62,6 @@ const NavBar = () => {
           </div>
         )}
       </div>
-      <ToastContainer />
     </div>
   );
 };

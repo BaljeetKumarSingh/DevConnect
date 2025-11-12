@@ -6,6 +6,7 @@ import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 const Body = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -18,7 +19,6 @@ const Body = () => {
         withCredentials: true,
       });
       dispatch(addUser(res.data));
-      console.log(res.data);
     } catch (err) {
       if (err.status === 401) {
         navigate("/login");
@@ -36,6 +36,7 @@ const Body = () => {
       <NavBar />
       <Outlet />
       <Footer />
+      <ToastContainer />
     </div>
   );
 };
