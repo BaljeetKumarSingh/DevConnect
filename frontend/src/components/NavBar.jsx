@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
 import { removeUser } from "../utils/userSlice";
+import { removeFeed } from "../utils/feedSlice";
 
 const NavBar = () => {
   const user = useSelector((store) => store.user);
@@ -13,6 +14,7 @@ const NavBar = () => {
   const handleLogout = async () => {
     await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
     dispatch(removeUser());
+    dispatch(removeFeed());
     toast("We'll Miss You!");
     return navigate("/login");
   };
