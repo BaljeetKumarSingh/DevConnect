@@ -45,7 +45,7 @@ const EditProfile = ({ user }) => {
     }
   };
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center gap-2 sm:gap-4">
       <div className="flex items-center justify-center my-15 sm:my-20 lg:my-24">
         <div className="bg-base-200 rounded-4xl flex flex-col items-center shadow-xl/20">
           <h1 className="text-2xl sm:text-3xl my-4 ">Login</h1>

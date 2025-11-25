@@ -10,7 +10,7 @@ import { ToastContainer } from "react-toastify";
 const Body = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((store) => store.user);
+  const user = useSelector((store) => store.user.user);
 
   const fetchUser = async () => {
     if (user) return;
